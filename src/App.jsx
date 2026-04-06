@@ -8,10 +8,10 @@ import {
   getTodoStats,
   sortTodosByPriority,
   toggleTodoStatus,
+  removeTodo, // 1. Thêm hàm removeTodo vào đây
 } from "./utils/todoUtils";
 import "./App.css";
 
-// Dữ liệu mẫu ban đầu [cite: 316, 320]
 const initialTodos = [
   { id: 1, title: "Học React", priority: "high", completed: false },
   { id: 2, title: "Làm bài lab GitHub", priority: "medium", completed: true },
@@ -22,22 +22,23 @@ export default function App() {
   const [todos, setTodos] = useState(initialTodos);
   const [filter, setFilter] = useState("all");
 
-  // Hàm thêm mới công việc [cite: 324, 326]
   function handleAdd(todo) {
     setTodos((prev) => addTodo(prev, todo));
   }
 
-  // Hàm đảo trạng thái hoàn thành [cite: 327, 329]
   function handleToggle(id) {
     setTodos((prev) => toggleTodoStatus(prev, id));
   }
 
-  // Xử lý hiển thị: Lọc trước, sau đó Sắp xếp theo độ ưu tiên [cite: 334, 335]
+  // 2. Thêm hàm xử lý xóa công việc
+  function handleDelete(id) {
+    setTodos((prev) => removeTodo(prev, id));
+  }
+
   const displayedTodos = useMemo(() => {
     return sortTodosByPriority(filterTodos(todos, filter));
   }, [todos, filter]);
 
-  // Tính toán thống kê [cite: 336]
   const stats = useMemo(() => getTodoStats(todos), [todos]);
 
   return (
@@ -45,10 +46,8 @@ export default function App() {
       <h1>Todo Priority App</h1>
       <p>Ứng dụng ReactJS dùng để thực hành GitHub Flow, Test và CI.</p>
       
-      {/* Component nhập liệu [cite: 342] */}
       <TodoForm onAdd={handleAdd} />
 
-      {/* Bộ lọc trạng thái [cite: 343, 350] */}
       <div className="filter-box">
         <label>Lọc công việc: </label>
         <select value={filter} onChange={(e) => setFilter(e.target.value)}>
@@ -58,11 +57,14 @@ export default function App() {
         </select>
       </div>
 
-      {/* Component thống kê [cite: 351] */}
       <TodoStats stats={stats} />
 
-      {/* Danh sách hiển thị [cite: 352] */}
-      <TodoList todos={displayedTodos} onToggle={handleToggle} />
+      {/* 3. Truyền thêm prop onDelete xuống TodoList */}
+      <TodoList 
+        todos={displayedTodos} 
+        onToggle={handleToggle} 
+        onDelete={handleDelete} 
+      />
     </div>
   );
 }

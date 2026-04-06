@@ -54,3 +54,6 @@ export function getTodoStats(list) {
     pending: total - completed, // [cite: 211]
   };
 }
+export function removeTodo(list, id) {
+  return list.filter(todo => todo.id !== id);
+}
